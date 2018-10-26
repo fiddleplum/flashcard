@@ -1,8 +1,11 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<title>Flashcards</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=0'>
+		<link rel='shortcut icon' href='icon16.png' sizes='16x16'>
+		<link rel='shortcut icon' href='icon.png' sizes='152x152'>
 		<script src="./index.js" /></script>
-		<link href="https://fonts.googleapis.com/css?family=Tenor+Sans" rel="stylesheet" />
 		<link href="index.css" rel="stylesheet" />
 		</style>
 	</head>
@@ -12,7 +15,7 @@
 			<div id="flashcard_back" class="hidden"></div>
 			<div id="header">
 				<div id="remove_button" class="button" onclick="app.removeCard();">―</div>
-				<div id="daynight_button" class="button" onclick="app.swapColors();">◪</div>
+				<div id="daynight_button" class="button" onclick="app.swapColors();">☀</div>
 				<div id="add_button" class="button" onclick="app.showDiv('add_form');">+</div>
 			</div>
 			<div id="footer">
@@ -22,9 +25,9 @@
 			</div>
 			<div id="add_form" class="hidden">
 				<div id="close" class="button" onclick="app.hideDiv('add_form');">✕</div>
-				<div id="front">Front<textarea id="front_textarea" class="textarea"></textarea></div>
-				<div id="back">Back<textarea id="back_textarea" class="textarea"></textarea></div>
-				<div id="tags">Tags<textarea id="tags_textarea" class="textarea"></textarea></div>
+				<div id="front">Front<textarea id="front_textarea" class="textarea" autocapitalize="off"></textarea></div>
+				<div id="back">Back<textarea id="back_textarea" class="textarea" autocapitalize="off"></textarea></div>
+				<div id="tags">Tags<textarea id="tags_textarea" class="textarea" autocapitalize="off"></textarea></div>
 				<div id="submit_add_button" class="button" onclick="app.addFromForm();">+</div>
 			</div>
 			<div id="waiting_screen">Loading...</div>

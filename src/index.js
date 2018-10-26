@@ -116,6 +116,9 @@ class App {
 			tags: tags,
 			numCorrect: 0
 		});
+		document.querySelector('#front_textarea').value = '';
+		document.querySelector('#back_textarea').value = '';
+		document.querySelector('#tags_textarea').value = '';
 
 		document.querySelector('#waiting_screen').innerHTML = 'Saving...';
 		app.hideDiv('add_form');
