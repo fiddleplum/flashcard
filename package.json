@@ -1,0 +1,36 @@
+{
+	"name": "flashcard",
+	"version": "0.0.0",
+	"description": "This is a flashcard web app",
+	"private": true,
+	"main": "index.html",
+	"scripts": {
+		"start": "webpack-dev-server --mode development --output-filename index.js --output-path www/ --content-base www/ --open",
+		"build": "webpack --mode development --output-filename index.js && cp dist/* www/ && rm -rf dist",
+		"build-production": "webpack --mode production --output-filename index.js && cp dist/* www/ && rm -rf dist"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fiddleplum/flashcard.git"
+	},
+	"author": "Stephen Hurley",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/fiddleplum/flashcard/issues"
+	},
+	"homepage": "https://github.com/fiddleplum/flashcard#readme",
+	"dependencies": {
+		"@fiddleplum/s3-fs": "github:fiddleplum/s3-fs"
+	},
+	"devDependencies": {
+		"webpack": "latest",
+		"webpack-cli": "latest",
+		"webpack-dev-server": "latest",
+		"eslint": "latest",
+		"eslint-config-standard": "latest",
+		"eslint-plugin-import": "latest",
+		"eslint-plugin-node": "latest",
+		"eslint-plugin-standard": "latest",
+		"eslint-plugin-promise": "latest"
+	}
+}

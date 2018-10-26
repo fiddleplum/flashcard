@@ -1,0 +1,163 @@
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	--bg: rgb(32, 32, 32);
+	--mg: rgb(64, 64, 64);
+	--fg: rgb(255, 222, 149);
+}
+
+body {
+	width: 100vw;
+	height: 100%;
+	margin: 0;
+	background: var(--bg);
+}
+
+.invert {
+	filter: invert(100%) hue-rotate(180deg);
+}
+
+.button {
+	display: inline-block;
+	width: 1.5em;
+	height: 1.5em;
+	background: var(--fg);
+	border-radius: .125em;
+	text-align: center;
+	line-height: 1.5em;
+	color: var(--bg);
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.visible {
+	visibility: visible;
+	opacity: 1;
+	transition: opacity .25s linear;
+}
+
+.hidden {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s .25s, opacity .25s linear;
+}
+
+#content {
+	width: 100vw;
+	height: 100%;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: Tenor Sans;
+	font-size: 32px;
+	line-height: 48px;
+}
+
+#header {
+	position: absolute;
+	top: 0;
+	width: 100vw;
+	height: 1.5em;
+	text-align: right;
+}
+
+#header #remove_button {
+	float: left;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+#header #daynight_button {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+#header #add_button {
+	border-bottom-right-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+#footer {
+	position: absolute;
+	bottom: 0;
+	width: 100vw;
+	height: 1.5em;
+	text-align: right;
+}
+
+#footer #incorrect_button {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+#footer #correct_button {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+#footer #flip_button {
+	border-top-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+#flashcard_front, #flashcard_back {
+	position: absolute;
+	display: flex;
+	width: 100vw;
+	height: 100%;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+#add_form {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	min-height: 100%;
+	background: var(--bg);
+	text-align: center;
+}
+
+#add_form #front, #add_form #back, #add_form #tags, #add_form #submit_add_button {
+	margin-top: 1em;
+}
+
+#add_form #close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+#add_form .textarea {
+	width: 100vw;
+	height: 2em;
+	background: var(--fg);
+	border: 0;
+	color: var(--bg);
+	font-size: 1em;
+}
+
+#waiting_screen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	width: 100vw;
+	height: 100%;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+	background: var(--bg);
+}
