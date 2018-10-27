@@ -37,16 +37,8 @@ body {
 	user-select: none;
 }
 
-.visible {
-	visibility: visible;
-	opacity: 1;
+div {
 	transition: opacity .25s linear;
-}
-
-.hidden {
-	visibility: hidden;
-	opacity: 0;
-	transition: visibility 0s .25s, opacity .25s linear;
 }
 
 #content {
@@ -114,6 +106,8 @@ body {
 	display: flex;
 	width: 100vw;
 	height: 100%;
+	opacity: 0;
+	visibility: hidden;
 	text-align: center;
 	justify-content: center;
 	align-items: center;
@@ -124,7 +118,10 @@ body {
 	top: 0;
 	left: 0;
 	width: 100vw;
-	min-height: 100%;
+	height: 100%;
+	overflow-y: scroll;
+	opacity: 0;
+	visibility: hidden;
 	background: var(--bg);
 	text-align: center;
 }

@@ -2,6 +2,22 @@
 
 import S3FS from '@fiddleplum/s3-fs';
 
+const transitionToPromise = (el, property, value) => new Promise((resolve) => {
+	if (window.getComputedStyle(el)[property] === value) {
+		resolve();
+		return;
+	}
+	el.style[property] = value;
+	const transitionEnded = (e) => {
+		if (e.propertyName !== property) {
+			return;
+		}
+		el.removeEventListener('transitionend', transitionEnded);
+		resolve();
+	};
+	el.addEventListener('transitionend', transitionEnded);
+});
+
 /**
  * @typedef Card
  * @type {object}
@@ -28,7 +44,7 @@ class App {
 		// Load S3
 		let password = urlParams.get('p');
 		if (password === null) {
-			throw new Error("Need Password");
+			throw new Error('Need Password');
 		}
 		let keyFile = 'keys/' + password.replace(/\W/g, '') + '.txt';
 		let response = await fetch(keyFile);
@@ -36,7 +52,7 @@ class App {
 		let [accessKey, secretKey, region] = text.split('\n');
 		this._s3fs = new S3FS(accessKey.trim(), secretKey.trim(), region.trim(), 'data-hurley', 'Flashcard');
 		if (this._s3fs === null) {
-			throw new Error("Need Connection");
+			throw new Error('Need Connection');
 		}
 
 		// Load JSON
@@ -54,13 +70,12 @@ class App {
 
 		// Show first card
 		if (this._cards.length > 0) {
-			this.getNextCard();
+			await this.getNextCard();
 		}
 	}
 
-	getNextCard() {
-		this.hideDiv('flashcard_front');
-		this.hideDiv('flashcard_back');
+	async getNextCard() {
+		await Promise.all([this.hideDiv('flashcard_front'), this.hideDiv('flashcard_back')]);
 
 		let totalWeight = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
@@ -71,35 +86,41 @@ class App {
 			randomWeight -= 1 / (this._cards[i].numCorrect + 1);
 			if (randomWeight <= 0) {
 				this._currentCardIndex = i;
+				console.log('here2');
 				let card = this._cards[this._currentCardIndex];
 				document.querySelector('#flashcard_front').innerHTML = card.front;
 				document.querySelector('#flashcard_back').innerHTML = card.back;
 				if (Math.random() < 0.5) {
-					this.showDiv('flashcard_front');
+					await this.showDiv('flashcard_front');
 				}
 				else {
-					this.showDiv('flashcard_back');
+					await this.showDiv('flashcard_back');
 				}
 				break;
 			}
 		}
 	}
 
-	flipFrontAndBack() {
-		this.toggleDiv('flashcard_front');
-		this.toggleDiv('flashcard_back');
+	async flipFrontAndBack() {
+		let div = document.querySelector('#flashcard_front');
+		if (window.getComputedStyle(div).opacity === '1') {
+			await Promise.all([this.hideDiv('flashcard_front'), this.showDiv('flashcard_back')]);
+		}
+		else {
+			await Promise.all([this.showDiv('flashcard_front'), this.hideDiv('flashcard_back')]);
+		}
 	}
 
 	async markCardCorrect() {
 		this._cards[this._currentCardIndex].numCorrect++;
 		await this._save();
-		this.getNextCard();
+		return this.getNextCard();
 	}
 
 	async markCardIncorrect() {
 		this._cards[this._currentCardIndex].numCorrect = Math.floor(this._cards[this._currentCardIndex].numCorrect / 4);
 		await this._save();
-		this.getNextCard();
+		return this.getNextCard();
 	}
 
 	async addFromForm() {
@@ -121,11 +142,10 @@ class App {
 		document.querySelector('#tags_textarea').value = '';
 
 		document.querySelector('#waiting_screen').innerHTML = 'Saving...';
-		app.hideDiv('add_form');
-		app.showDiv('waiting_screen');
+		await Promise.all(this.hideDiv('add_form'), this.showDiv('waiting_screen'));
 		await this._save();
-		app.hideDiv('waiting_screen');
-		this.getNextCard();
+		await this.hideDiv('waiting_screen');
+		return this.getNextCard();
 	}
 
 	async removeCard() {
@@ -142,36 +162,24 @@ class App {
 		await this._s3fs.save('cards.json', JSON.stringify(this._cards));
 	}
 
-	showDiv(id) {
+	async showDiv(id) {
 		let div = document.querySelector('#' + id);
-		document.querySelector('#' + id).classList.remove('hidden');
-		document.querySelector('#' + id).classList.add('visible');
+		div.style.visibility = 'visible';
+		await transitionToPromise(div, 'opacity', '1');
 	}
 
-	hideDiv(id) {
+	async hideDiv(id) {
 		let div = document.querySelector('#' + id);
-		document.querySelector('#' + id).classList.remove('visible');
-		document.querySelector('#' + id).classList.add('hidden');
-	}
-
-	toggleDiv(id) {
-		let div = document.querySelector('#' + id);
-		if (div.classList.contains('visible')) {
-			document.querySelector('#' + id).classList.remove('visible');
-			document.querySelector('#' + id).classList.add('hidden');
-		}
-		else {
-			document.querySelector('#' + id).classList.remove('hidden');
-			document.querySelector('#' + id).classList.add('visible');
-		}
+		await transitionToPromise(div, 'opacity', '0');
+		div.style.visibility = 'hidden';
 	}
 }
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
 	let app = new App();
 	window.app = app;
-	app.initialize().then(() => {
-		app.hideDiv('waiting_screen');
+	app.initialize().then(async () => {
+		await app.hideDiv('waiting_screen');
 	});
 });
 
