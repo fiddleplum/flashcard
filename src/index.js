@@ -86,7 +86,6 @@ class App {
 			randomWeight -= 1 / (this._cards[i].numCorrect + 1);
 			if (randomWeight <= 0) {
 				this._currentCardIndex = i;
-				console.log('here2');
 				let card = this._cards[this._currentCardIndex];
 				document.querySelector('#flashcard_front').innerHTML = card.front;
 				document.querySelector('#flashcard_back').innerHTML = card.back;
