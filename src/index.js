@@ -132,6 +132,14 @@ class App {
 			tags[i] = tags[i].trim();
 		}
 
+		// Check for duplicate.
+		for (let i = 0, l = this._cards.length; i < l; i++) {
+			if (this._cards[i].front === front) {
+				this._cards.splice(i, 1);
+				break;
+			}
+		}
+
 		// Add it.
 		this._cards.push({
 			front: front,
