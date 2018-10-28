@@ -85,6 +85,21 @@ div {
 	text-align: right;
 }
 
+#footer #average_score {
+	float: left;
+	width: 3em;
+	height: 1.5em;
+	border-radius: .125em;
+	padding-left: .25em;
+	text-align: left;
+	line-height: 1.5em;
+	color: var(--fg);
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 #footer #incorrect_button {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;

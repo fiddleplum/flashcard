@@ -67,6 +67,7 @@ class App {
 				throw error;
 			}
 		}
+		this._updateAverageScore();
 
 		// Show first card
 		if (this._cards.length > 0) {
@@ -113,12 +114,14 @@ class App {
 	async markCardCorrect() {
 		this._cards[this._currentCardIndex].score++;
 		await this._save();
+		this._updateAverageScore();
 		return this.getNextCard();
 	}
 
 	async markCardIncorrect() {
 		this._cards[this._currentCardIndex].score = Math.floor(this._cards[this._currentCardIndex].score / 4);
 		await this._save();
+		this._updateAverageScore();
 		return this.getNextCard();
 	}
 
@@ -157,17 +160,29 @@ class App {
 		await Promise.all([this.hideDiv('add_form'), this.showDiv('waiting_screen')]);
 		await this._save();
 		await this.hideDiv('waiting_screen');
+
+		this._updateAverageScore();
 		return this.getNextCard();
 	}
 
 	async removeCard() {
 		this._cards.splice(this._currentCardIndex, 1);
 		await this._save();
+		this._updateAverageScore();
 		this.getNextCard();
 	}
 
 	swapColors() {
 		document.body.classList.toggle('invert');
+	}
+
+	_updateAverageScore() {
+		let totalScore = 0;
+		for (let i = 0, l = this._cards.length; i < l; i++) {
+			totalScore += this._cards[i].score;
+		}
+		totalScore /= this._cards.length;
+		document.querySelector('#average_score').innerHTML = totalScore.toFixed(2);
 	}
 
 	async _save() {
