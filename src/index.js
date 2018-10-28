@@ -123,6 +123,7 @@ class App {
 	}
 
 	async addFromForm() {
+		// Get the data from the form.
 		let front = document.querySelector('#front_textarea').value;
 		let back = document.querySelector('#back_textarea').value;
 		let tags = document.querySelector('#tags_textarea').value;
@@ -130,18 +131,22 @@ class App {
 		for (let i = 0, l = tags.length; i < l; i++) {
 			tags[i] = tags[i].trim();
 		}
+
+		// Add it.
 		this._cards.push({
 			front: front,
 			back: back,
 			tags: tags,
 			numCorrect: 0
 		});
+
+		// Clear the form.
 		document.querySelector('#front_textarea').value = '';
 		document.querySelector('#back_textarea').value = '';
 		document.querySelector('#tags_textarea').value = '';
 
 		document.querySelector('#waiting_screen').innerHTML = 'Saving...';
-		await Promise.all(this.hideDiv('add_form'), this.showDiv('waiting_screen'));
+		await Promise.all([this.hideDiv('add_form'), this.showDiv('waiting_screen')]);
 		await this._save();
 		await this.hideDiv('waiting_screen');
 		return this.getNextCard();
