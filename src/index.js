@@ -24,7 +24,7 @@ const transitionToPromise = (el, property, value) => new Promise((resolve) => {
  * @property {string} front
  * @property {string} back
  * @property {string[]} tags
- * @property {number} numCorrect
+ * @property {number} score
  */
 
 class App {
@@ -79,16 +79,16 @@ class App {
 
 		let totalWeight = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			totalWeight += 1 / (this._cards[i].numCorrect + 1);
+			totalWeight += 1 / (this._cards[i].score + 1);
 		}
 		let randomWeight = Math.random() * totalWeight;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			randomWeight -= 1 / (this._cards[i].numCorrect + 1);
+			randomWeight -= 1 / (this._cards[i].score + 1);
 			if (randomWeight <= 0) {
 				this._currentCardIndex = i;
 				let card = this._cards[this._currentCardIndex];
-				document.querySelector('#flashcard_front').innerHTML = card.front;
-				document.querySelector('#flashcard_back').innerHTML = card.back;
+				document.querySelector('#flashcard_front').innerHTML = card.front + '<br/>Score: ' + card.score;
+				document.querySelector('#flashcard_back').innerHTML = card.back + '<br/>Score: ' + card.score;
 				if (Math.random() < 0.5) {
 					await this.showDiv('flashcard_front');
 				}
@@ -111,13 +111,13 @@ class App {
 	}
 
 	async markCardCorrect() {
-		this._cards[this._currentCardIndex].numCorrect++;
+		this._cards[this._currentCardIndex].score++;
 		await this._save();
 		return this.getNextCard();
 	}
 
 	async markCardIncorrect() {
-		this._cards[this._currentCardIndex].numCorrect = Math.floor(this._cards[this._currentCardIndex].numCorrect / 4);
+		this._cards[this._currentCardIndex].score = Math.floor(this._cards[this._currentCardIndex].score / 4);
 		await this._save();
 		return this.getNextCard();
 	}
@@ -145,7 +145,7 @@ class App {
 			front: front,
 			back: back,
 			tags: tags,
-			numCorrect: 0
+			score: 0
 		});
 
 		// Clear the form.
