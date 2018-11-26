@@ -51,6 +51,18 @@ div {
 	line-height: 48px;
 }
 
+#sombrero {
+	display: inline-block;
+	width: 100vw;
+	height: 1.5em;
+	vertical-align: top;
+	text-align: center;
+}
+
+#sombrero img {
+	height: 1.5em;
+}
+
 #header {
 	position: absolute;
 	top: 0;
@@ -69,12 +81,14 @@ div {
 #header #daynight_button {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
+	vertical-align: top;
 }
 
 #header #add_button {
 	border-bottom-right-radius: 0;
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
+	vertical-align: top;
 }
 
 #footer {
