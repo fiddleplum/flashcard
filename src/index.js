@@ -80,11 +80,11 @@ class App {
 
 		let totalWeight = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			totalWeight += 1 / (this._cards[i].score + 1);
+			totalWeight += this.getWeight(this._cards[i]);
 		}
 		let randomWeight = Math.random() * totalWeight;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			randomWeight -= 1 / (this._cards[i].score + 1);
+			randomWeight -= this.getWeight(this._cards[i]);
 			if (randomWeight <= 0) {
 				this._currentCardIndex = i;
 				let card = this._cards[this._currentCardIndex];
@@ -99,6 +99,10 @@ class App {
 				break;
 			}
 		}
+	}
+
+	getWeight(card) {
+		return Math.pow(1.6, -card.score);
 	}
 
 	async flipFrontAndBack() {
