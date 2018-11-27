@@ -5,8 +5,8 @@
 	"private": true,
 	"main": "index.html",
 	"scripts": {
-		"start": "webpack-dev-server --mode development --output-filename index.js --output-path www/ --content-base www/ --open",
-		"build": "webpack --mode development --output-filename index.js && cp dist/* www/ && rm -rf dist",
+		"start": "webpack-dev-server --mode development --devtool inline-cheap-source-map --output-filename index.js --output-path www/ --content-base www/ --open",
+		"build": "webpack --mode development --devtool inline-cheap-source-map --output-filename index.js && cp dist/* www/ && rm -rf dist",
 		"build-production": "webpack --mode production --output-filename index.js && cp dist/* www/ && rm -rf dist"
 	},
 	"repository": {

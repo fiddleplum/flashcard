@@ -11,28 +11,38 @@
 	</head>
 	<body>
 		<div id="content">
-			<div id="flashcard_front"></div>
-			<div id="flashcard_back"></div>
-			<div id="header">
-				<div id="remove_button" class="button" onclick="app.removeCard();">―</div>
-				<div id="daynight_button" class="button" onclick="app.swapColors();">☀</div>
-				<div id="add_button" class="button" onclick="app.showDiv('add_form');">+</div>
+			<div id="card_screen">
+				<div id="flashcard_front"></div>
+				<div id="flashcard_back"></div>
+				<div id="header">
+					<div id="remove_button" class="button" onclick="app.removeCard();">―</div><!--
+					--><div id="edit_button" class="button" onclick="app.editCard();">E</div><!--
+					--><div id="list_button" class="button" onclick="app.listCards();">☰</div><!--
+					--><div id="add_button" class="button" onclick="app.switchScreen('add_screen');">+</div>
+				</div>
+				<div id="sombrero"><img src="sombrero.png"/></div>
+				<div id="footer">
+					<div id="average_score">4.5</div>
+					<div id="daynight_button" class="button" onclick="app.swapColors();">☀</div><!--
+					--><div id="incorrect_button" class="button" onclick="app.markCardIncorrect();">✕</div><!--
+					--><div id="correct_button" class="button" onclick="app.markCardCorrect();">✓</div><!--
+					--><div id="flip_button" class="button" onclick="app.flipFrontAndBack();">⇄</div>
+				</div>
 			</div>
-			<div id="sombrero"><img src="sombrero.png"/></div>
-			<div id="footer">
-				<div id="average_score">4.5</div>
-				<div id="incorrect_button" class="button" onclick="app.markCardIncorrect();">✕</div>
-				<div id="correct_button" class="button" onclick="app.markCardCorrect();">✓</div>
-				<div id="flip_button" class="button" onclick="app.flipFrontAndBack();">⇄</div>
+			<div id="waiting_screen">
+				<div class="middle">Loading...</div>
 			</div>
-			<div id="add_form">
-				<div id="close" class="button" onclick="app.hideDiv('add_form');">✕</div>
+			<div id="add_screen">
+				<div id="close" class="button" onclick="app.switchScreen('card_screen'); ">✕</div>
 				<div id="front">Front<textarea id="front_textarea" class="textarea" autocapitalize="off"></textarea></div>
 				<div id="back">Back<textarea id="back_textarea" class="textarea" autocapitalize="off"></textarea></div>
 				<div id="tags">Tags<textarea id="tags_textarea" class="textarea" autocapitalize="off"></textarea></div>
 				<div id="submit_add_button" class="button" onclick="app.addFromForm();">+</div>
 			</div>
-			<div id="waiting_screen">Loading...</div>
+			<div id="list_screen">
+				<div id="heading">Cards</div>
+				<div id="list"></div>
+			</div>
 		</div>
 	</body>
 </html>

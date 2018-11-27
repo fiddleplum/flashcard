@@ -2,22 +2,6 @@
 
 import S3FS from '@fiddleplum/s3-fs';
 
-const transitionToPromise = (el, property, value) => new Promise((resolve) => {
-	if (window.getComputedStyle(el)[property] === value) {
-		resolve();
-		return;
-	}
-	el.style[property] = value;
-	const transitionEnded = (e) => {
-		if (e.propertyName !== property) {
-			return;
-		}
-		el.removeEventListener('transitionend', transitionEnded);
-		resolve();
-	};
-	el.addEventListener('transitionend', transitionEnded);
-});
-
 /**
  * @typedef Card
  * @type {object}
@@ -76,8 +60,6 @@ class App {
 	}
 
 	async getNextCard() {
-		await Promise.all([this.hideDiv('flashcard_front'), this.hideDiv('flashcard_back')]);
-
 		let totalWeight = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
 			totalWeight += this.getWeight(this._cards[i]);
@@ -86,18 +68,24 @@ class App {
 		for (let i = 0, l = this._cards.length; i < l; i++) {
 			randomWeight -= this.getWeight(this._cards[i]);
 			if (randomWeight <= 0) {
-				this._currentCardIndex = i;
-				let card = this._cards[this._currentCardIndex];
-				document.querySelector('#flashcard_front').innerHTML = card.front + '<br/>Score: ' + card.score;
-				document.querySelector('#flashcard_back').innerHTML = card.back + '<br/>Score: ' + card.score;
-				if (Math.random() < 0.5) {
-					await this.showDiv('flashcard_front');
-				}
-				else {
-					await this.showDiv('flashcard_back');
-				}
+				await this.showCard(i);
 				break;
 			}
+		}
+	}
+
+	async showCard(i) {
+		this._currentCardIndex = i;
+		await Promise.all([this.hideDiv('flashcard_front'), this.hideDiv('flashcard_back')]);
+		await this.switchScreen('card_screen');
+		let card = this._cards[i];
+		document.querySelector('#flashcard_front').innerHTML = '<div class="middle">' + card.front + '<br/>Score: ' + card.score + '</div>';
+		document.querySelector('#flashcard_back').innerHTML = '<div class="middle">' + card.back + '<br/>Score: ' + card.score + '</div>';
+		if (Math.random() < 0.5) {
+			await this.showDiv('flashcard_front');
+		}
+		else {
+			await this.showDiv('flashcard_back');
 		}
 	}
 
@@ -139,14 +127,6 @@ class App {
 			tags[i] = tags[i].trim();
 		}
 
-		// Check for duplicate.
-		for (let i = 0, l = this._cards.length; i < l; i++) {
-			if (this._cards[i].front === front) {
-				this._cards.splice(i, 1);
-				break;
-			}
-		}
-
 		// Add it.
 		this._cards.push({
 			front: front,
@@ -161,11 +141,15 @@ class App {
 		document.querySelector('#tags_textarea').value = '';
 
 		document.querySelector('#waiting_screen').innerHTML = 'Saving...';
-		await Promise.all([this.hideDiv('add_form'), this.showDiv('waiting_screen')]);
+		await Promise.all([this.hideDiv('add_screen'), this.showDiv('waiting_screen')]);
 		await this._save();
 		await this.hideDiv('waiting_screen');
 
 		this._updateAverageScore();
+
+		// If it was hidden (from an editCard call), redisplay it.
+		document.querySelector('#add_screen #close').style.display = 'block';
+
 		return this.getNextCard();
 	}
 
@@ -178,6 +162,27 @@ class App {
 
 	swapColors() {
 		document.body.classList.toggle('invert');
+	}
+
+	async listCards() {
+		let listDiv = document.querySelector('#list_screen #list');
+		let html = '';
+		for (let i = 0, l = this._cards.length; i < l; i++) {
+			let card = this._cards[i];
+			html += '<div onclick="app.showCard(' + i + ');">' + card.front + ' ⇄ ' + card.back + '</div>';
+		}
+		listDiv.innerHTML = html;
+		await this.switchScreen('list_screen');
+	}
+
+	async editCard() {
+		let card = this._cards[this._currentCardIndex];
+		this._cards.splice(this._currentCardIndex, 1);
+		await this.switchScreen('add_screen');
+		document.querySelector('#front_textarea').value = card.front;
+		document.querySelector('#back_textarea').value = card.back;
+		document.querySelector('#tags_textarea').value = card.tags.join(',');
+		document.querySelector('#add_screen #close').style.display = 'none';
 	}
 
 	_updateAverageScore() {
@@ -194,15 +199,65 @@ class App {
 	}
 
 	async showDiv(id) {
-		let div = document.querySelector('#' + id);
-		div.style.visibility = 'visible';
-		await transitionToPromise(div, 'opacity', '1');
+		const duration = 0.25;
+		const fps = 30.0;
+		const div = document.querySelector('#' + id);
+		if (div.style.display !== 'block') {
+			div.style.opacity = '0';
+			div.style.display = 'block';
+			return new Promise((resolve, reject) => {
+				const timer = setInterval((div) => {
+					let u = Number.parseFloat(div.style.opacity);
+					u += 1.0 / (duration * fps);
+					u = Math.min(u, 1.0);
+					div.style.opacity = '' + u;
+					if (u >= 1.0) {
+						clearInterval(timer);
+						resolve();
+					}
+				}, 1000.0 / fps, div);
+			});
+		}
+		else {
+			return Promise.resolve();
+		}
 	}
 
 	async hideDiv(id) {
-		let div = document.querySelector('#' + id);
-		await transitionToPromise(div, 'opacity', '0');
-		div.style.visibility = 'hidden';
+		const duration = 0.25;
+		const fps = 30.0;
+		const div = document.querySelector('#' + id);
+		if (div.style.display !== 'none') {
+			div.style.opacity = '1';
+			return new Promise((resolve, reject) => {
+				const timer = setInterval((div) => {
+					let u = Number.parseFloat(div.style.opacity);
+					u -= 1.0 / (duration * fps);
+					u = Math.max(u, 0.0);
+					div.style.opacity = '' + u;
+					if (u <= 0.0) {
+						div.style.display = 'none';
+						clearInterval(timer);
+						resolve();
+					}
+				}, 1000.0 / fps, div);
+			});
+		}
+		else {
+			return Promise.resolve();
+		}
+	}
+
+	async switchScreen(id) {
+		let hideDivPromises = [];
+		for (let child of document.querySelectorAll('#content div[id$=_screen]')) {
+			if (child.id === id) {
+				continue;
+			}
+			hideDivPromises.push(this.hideDiv(child.id));
+		}
+		await Promise.all(hideDivPromises);
+		await this.showDiv(id);
 	}
 }
 
@@ -210,7 +265,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	let app = new App();
 	window.app = app;
 	app.initialize().then(async () => {
-		await app.hideDiv('waiting_screen');
+		await app.switchScreen('card_screen');
 	});
 });
 
