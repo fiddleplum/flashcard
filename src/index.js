@@ -19,11 +19,18 @@ class App {
 		/** @type Card[] */
 		this._cards = [];
 
+		/** @type {string} */
+		this._tag = '';
+
 		this._currentCardIndex = Number.NaN;
 	}
 
 	async initialize() {
 		let urlParams = new URLSearchParams(document.location.search.substring(1));
+
+		if (urlParams.has('tag')) {
+			this._tag = urlParams.get('tag');
+		}
 
 		// Load S3
 		let password = urlParams.get('p');
@@ -62,14 +69,18 @@ class App {
 	async getNextCard() {
 		let totalWeight = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			totalWeight += this.getWeight(this._cards[i]);
+			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
+				totalWeight += this.getWeight(this._cards[i]);
+			}
 		}
 		let randomWeight = Math.random() * totalWeight;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			randomWeight -= this.getWeight(this._cards[i]);
-			if (randomWeight <= 0) {
-				await this.showCard(i);
-				break;
+			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
+				randomWeight -= this.getWeight(this._cards[i]);
+				if (randomWeight <= 0) {
+					await this.showCard(i);
+					break;
+				}
 			}
 		}
 	}
@@ -168,8 +179,10 @@ class App {
 		let listDiv = document.querySelector('#list_screen #list');
 		let html = '';
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			let card = this._cards[i];
-			html += '<div onclick="app.showCard(' + i + ');">' + card.front + ' ⇄ ' + card.back + '</div>';
+			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
+				let card = this._cards[i];
+				html += '<div onclick="app.showCard(' + i + ');">' + card.front + ' ⇄ ' + card.back + '</div>';
+			}
 		}
 		listDiv.innerHTML = html;
 		await this.switchScreen('list_screen');
@@ -188,7 +201,9 @@ class App {
 	_updateAverageScore() {
 		let totalScore = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
-			totalScore += this._cards[i].score;
+			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
+				totalScore += this._cards[i].score;
+			}
 		}
 		totalScore /= this._cards.length;
 		document.querySelector('#average_score').innerHTML = totalScore.toFixed(2);
