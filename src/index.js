@@ -49,6 +49,11 @@ class App {
 		// Load JSON
 		try {
 			this._cards = JSON.parse(await this._s3fs.load('cards.json'));
+			for (let card of this._cards) {
+				if (card.tags.length === 1 && card.tags[0] === '') {
+					card.tags = [];
+				}
+			}
 		}
 		catch (error) {
 			if (!this._s3fs.exists('cards.json')) {
@@ -61,9 +66,14 @@ class App {
 		this._updateAverageScore();
 
 		// Show first card
-		if (this._cards.length > 0) {
-			await this.getNextCard();
-		}
+		await this.getNextCard();
+	}
+
+	async setTag(tag) {
+		this._tag = tag;
+
+		// Show first card
+		await this.getNextCard();
 	}
 
 	async getNextCard() {
@@ -137,6 +147,9 @@ class App {
 		for (let i = 0, l = tags.length; i < l; i++) {
 			tags[i] = tags[i].trim();
 		}
+		if (tags.length === 1 && tags[0] === '') {
+			tags = [];
+		}
 
 		// Add it.
 		this._cards.push({
@@ -178,6 +191,30 @@ class App {
 	async listCards() {
 		let listDiv = document.querySelector('#list_screen #list');
 		let html = '';
+
+		// Get all of the tags.
+		let tags = new Set();
+		for (let card of this._cards) {
+			for (let tag of card.tags) {
+				tags.add(tag);
+			}
+		}
+		console.log(tags);
+
+		// Show all tags.
+		html += '<header>Tags</header>';
+		html += '<div onclick="app.setTag(\'\');"><i>none</i></div>';
+		for (let tag of tags) {
+			html += '<div onclick="app.setTag(\'' + tag + '\');">' + tag + '</div>';
+		}
+
+		// Show all cards using the active tag.
+		if (this._tag !== '') {
+			html += '<header>Cards using ' + this._tag + '</header>';
+		}
+		else {
+			html += '<header>Cards</header>';
+		}
 		for (let i = 0, l = this._cards.length; i < l; i++) {
 			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
 				let card = this._cards[i];

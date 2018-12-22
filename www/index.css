@@ -210,6 +210,10 @@ body {
 	text-align: center;
 }
 
+#list_screen header {
+	margin-top: 1em;
+}
+
 #list_screen #list div {
 	border-top: 1px solid var(--fg);
 }
