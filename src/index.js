@@ -71,6 +71,7 @@ class App {
 
 	async setTag(tag) {
 		this._tag = tag;
+		this._updateAverageScore();
 
 		// Show first card
 		await this.getNextCard();
@@ -236,13 +237,15 @@ class App {
 	}
 
 	_updateAverageScore() {
+		let numCards = 0;
 		let totalScore = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
 			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
 				totalScore += this._cards[i].score;
+				numCards += 1;
 			}
 		}
-		totalScore /= this._cards.length;
+		totalScore /= numCards;
 		document.querySelector('#average_score').innerHTML = totalScore.toFixed(2);
 	}
 
