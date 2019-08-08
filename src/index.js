@@ -219,7 +219,7 @@ class App {
 		for (let i = 0, l = this._cards.length; i < l; i++) {
 			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
 				let card = this._cards[i];
-				html += '<div onclick="app.showCard(' + i + ');">' + card.front + ' ⇄ ' + card.back + '</div>';
+				html += '<div onclick="app.showCard(' + i + ');"><span>' + card.front + ' ⇄ ' + card.back + '</span><span class="right">' + card.score + '</span></div>';
 			}
 		}
 		listDiv.innerHTML = html;
@@ -241,7 +241,7 @@ class App {
 		let totalScore = 0;
 		for (let i = 0, l = this._cards.length; i < l; i++) {
 			if (this._tag === '' || this._cards[i].tags.includes(this._tag)) {
-				totalScore += this._cards[i].score;
+				totalScore += Math.min(5, this._cards[i].score);
 				numCards += 1;
 			}
 		}

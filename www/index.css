@@ -34,6 +34,14 @@ body {
 	text-align: center;
 }
 
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
 .button {
 	display: inline-block;
 	width: 1.5em;
